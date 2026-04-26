@@ -17,3 +17,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+database/database.sqlite
+.env.backup
+storage/app/backups/
+storage/app/restore-progress/
