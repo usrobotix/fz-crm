@@ -1,3 +1,73 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --color-surface:        #ffffff;
+    --color-surface-2:      #f6f8fb;
+    --color-surface-hover:  #eff2f7;
+    --color-text:           #1e242e;
+    --color-text-secondary: #1e335d99;
+    --color-text-disabled:  #475a8080;
+    --color-border:         #b0bdd633;
+    --color-border-hover:   #a5b1ca4d;
+    --color-primary:        #3782ff;
+    --color-primary-hover:  #2556ff;
+    --color-primary-active: #0436e4;
+    --color-success:        #26aa72;
+    --color-error:          #dd0000;
+    --color-warning:        #ff8200;
+    --color-focus:          #ffdd57;
+    --border-radius-sm:     12px;
+    --border-radius-md:     14px;
+    --border-radius-lg:     20px;
+    --shadow-card:    0 2px 4px rgba(77,86,103,.12), 0 3px 6px rgba(77,86,103,.15);
+    --shadow-popover: 0 0 3px rgba(165,177,202,.3), 0 10px 40px rgba(165,177,202,.3);
+    --shadow-dialog:  0 10px 40px rgba(18,23,37,.5), 0 0 3px rgba(18,23,37,.5);
+    --dc-transition: transform .1s ease-out, color .15s linear, background-color .15s linear, box-shadow .15s linear, fill .15s linear, border-color .15s linear;
+  }
+  .dark {
+    --color-surface:        #1e242e;
+    --color-surface-2:      #242d3d;
+    --color-surface-hover:  #2a3347;
+    --color-text:           #e8ecf2;
+    --color-text-secondary: rgba(200,210,230,.6);
+    --color-text-disabled:  rgba(200,210,230,.35);
+    --color-border:         rgba(100,120,180,.18);
+    --color-border-hover:   rgba(120,140,200,.3);
+    --color-primary:        #3782ff;
+    --color-primary-hover:  #5898ff;
+    --color-primary-active: #2556ff;
+    --color-success:        #26aa72;
+    --color-error:          #ff4444;
+    --color-warning:        #ff8200;
+    --color-focus:          #ffdd57;
+    --shadow-card:    0 2px 8px rgba(0,0,0,.3), 0 3px 12px rgba(0,0,0,.2);
+    --shadow-popover: 0 0 3px rgba(0,0,0,.3), 0 10px 40px rgba(0,0,0,.3);
+    --shadow-dialog:  0 10px 40px rgba(0,0,0,.6), 0 0 3px rgba(0,0,0,.4);
+  }
+}
+
+@layer utilities {
+  .bg-surface        { background-color: var(--color-surface); }
+  .bg-surface-2      { background-color: var(--color-surface-2); }
+  .bg-surface-hover  { background-color: var(--color-surface-hover); }
+  .text-dc           { color: var(--color-text); }
+  .text-dc-secondary { color: var(--color-text-secondary); }
+  .text-dc-disabled  { color: var(--color-text-disabled); }
+  .border-dc         { border-color: var(--color-border); }
+  .border-dc-hover   { border-color: var(--color-border-hover); }
+  .text-dc-primary   { color: var(--color-primary); }
+  .bg-dc-primary     { background-color: var(--color-primary); }
+  .shadow-dc-card    { box-shadow: var(--shadow-card); }
+  .shadow-dc-dialog  { box-shadow: var(--shadow-dialog); }
+  .shadow-dc-popover { box-shadow: var(--shadow-popover); }
+  .dc-transition     { transition: var(--dc-transition); }
+}
+
+@layer components {
+  .dc-table-row:hover .dc-table-cell { background-color: var(--color-surface-hover); }
+  .dc-table-row.selected .dc-table-cell { background-color: var(--color-surface-2); }
+  .dc-btn:active { transform: scale(0.98); }
+}
