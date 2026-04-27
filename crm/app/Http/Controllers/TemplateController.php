@@ -43,17 +43,6 @@ class TemplateController extends Controller
 
     public function store(Request $request)
     {
-        
-        $bodyRaw = $request->input('body');
-
-        \Log::info('TEMPLATE_BODY_DEBUG', [
-            'has_body_key' => array_key_exists('body', $request->all()),
-            'body_is_null' => $bodyRaw === null,
-            'body_type' => gettype($bodyRaw),
-            'body_len' => is_string($bodyRaw) ? mb_strlen($bodyRaw) : null,
-            'body_preview' => is_string($bodyRaw) ? mb_substr($bodyRaw, 0, 80) : null,
-        ]);
-
         $data = $request->validate([
             'law_id'    => 'required|exists:laws,id',
             'title'     => 'required',
@@ -66,18 +55,10 @@ class TemplateController extends Controller
             'body'      => 'required',
         ]);
 
-        \Log::info('TEMPLATE_STORE_VALIDATED', [
-            'data' => $data,
-        ]);
-
         $body = $data['body'];
         unset($data['body']);
 
         $template = Template::create($data);
-
-        \Log::info('TEMPLATE_STORE_TEMPLATE_CREATED', [
-            'template_id' => $template->id,
-        ]);
 
         TemplateVersion::create([
             'template_id' => $template->id,
@@ -85,10 +66,6 @@ class TemplateController extends Controller
             'version_number' => 1,
             'body' => $body,
             'change_note' => 'Первая версия',
-        ]);
-
-        \Log::info('TEMPLATE_STORE_VERSION_CREATED', [
-            'template_id' => $template->id,
         ]);
 
         return redirect()->route('templates.show', $template)->with('success', 'Шаблон создан.');
@@ -112,11 +89,6 @@ class TemplateController extends Controller
 
     public function update(Request $request, Template $template)
     {
-        \Log::info('TEMPLATE_UPDATE_ENTER', [
-            'user_id' => auth()->id(),
-            'template_id' => $template->id,
-        ]);
-
         $data = $request->validate([
             'law_id'      => 'required|exists:laws,id',
             'title'       => 'required',

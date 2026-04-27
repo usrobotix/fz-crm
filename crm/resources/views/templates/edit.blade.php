@@ -48,7 +48,7 @@
                         <label class="block text-ys-s font-medium text-dc mb-1">Статус</label>
                         <select name="status"
                             class="w-full rounded-2xs border border-dc-gray-20 bg-surface text-dc text-ys-s px-3 py-2 focus:outline-none focus:border-dc-blue-100">
-                            @foreach(['draft'=>'Черновик','active'=>'Активный','deprecated'=>'Устаревший'] as $val => $lbl)
+                            @foreach(['draft'=>'Черновик','active'=>'Активный','archived'=>'Устаревший'] as $val => $lbl)
                             <option value="{{ $val }}" {{ old('status', $template->status) === $val ? 'selected' : '' }}>{{ $lbl }}</option>
                             @endforeach
                         </select>
@@ -73,9 +73,9 @@
                 {{-- Markdown editor + preview --}}
                 <div class="lg:col-span-2 bg-surface rounded-md shadow-dc-card overflow-hidden flex flex-col" style="min-height:600px">
                     <div class="flex border-b border-dc">
-                        <button type="button" onclick="switchTab('editor')" id="tab-editor"
+                        <button type="button" id="tab-editor"
                             class="px-4 py-3 text-ys-s font-medium text-dc-primary border-b-2 border-dc-blue-100">Редактор</button>
-                        <button type="button" onclick="switchTab('preview')" id="tab-preview"
+                        <button type="button" id="tab-preview"
                             class="px-4 py-3 text-ys-s font-medium text-dc-secondary hover:text-dc">Предпросмотр</button>
                     </div>
                     <div class="flex flex-1 overflow-hidden">
@@ -84,6 +84,11 @@
                             style="min-height:540px">{{ old('body', $template->latestVersion?->body) }}</textarea>
                         <div id="preview-pane" class="hidden flex-1 p-4 overflow-y-auto prose prose-sm max-w-none text-dc" style="min-height:540px"></div>
                     </div>
+                    @error('body')
+                        <div class="px-4 py-3 border-t border-dc text-dc-red-100 text-ys-xs">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
             </div>
         </form>
@@ -93,33 +98,45 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
-function switchTab(tab) {
+document.addEventListener('DOMContentLoaded', function () {
     const editor = document.getElementById('body-input');
     const preview = document.getElementById('preview-pane');
     const tabEditor = document.getElementById('tab-editor');
     const tabPreview = document.getElementById('tab-preview');
-    if (tab === 'editor') {
-        editor.classList.remove('hidden');
-        preview.classList.add('hidden');
-        tabEditor.classList.add('text-dc-primary','border-b-2','border-dc-blue-100');
-        tabEditor.classList.remove('text-dc-secondary');
-        tabPreview.classList.remove('text-dc-primary','border-b-2','border-dc-blue-100');
-        tabPreview.classList.add('text-dc-secondary');
-    } else {
-        editor.classList.add('hidden');
-        preview.classList.remove('hidden');
-        preview.innerHTML = marked.parse(editor.value || '');
-        tabPreview.classList.add('text-dc-primary','border-b-2','border-dc-blue-100');
-        tabPreview.classList.remove('text-dc-secondary');
-        tabEditor.classList.remove('text-dc-primary','border-b-2','border-dc-blue-100');
-        tabEditor.classList.add('text-dc-secondary');
+
+    function setActiveTab(tab) {
+        if (tab === 'editor') {
+            editor.classList.remove('hidden');
+            preview.classList.add('hidden');
+            tabEditor.classList.add('text-dc-primary', 'border-b-2', 'border-dc-blue-100');
+            tabEditor.classList.remove('text-dc-secondary');
+            tabPreview.classList.remove('text-dc-primary', 'border-b-2', 'border-dc-blue-100');
+            tabPreview.classList.add('text-dc-secondary');
+        } else {
+            editor.classList.add('hidden');
+            preview.classList.remove('hidden');
+            if (typeof marked !== 'undefined') {
+                preview.innerHTML = marked.parse(editor.value || '');
+            } else {
+                preview.innerHTML = '<p style="color:#b00">Ошибка: marked не загрузился</p>';
+            }
+            tabPreview.classList.add('text-dc-primary', 'border-b-2', 'border-dc-blue-100');
+            tabPreview.classList.remove('text-dc-secondary');
+            tabEditor.classList.remove('text-dc-primary', 'border-b-2', 'border-dc-blue-100');
+            tabEditor.classList.add('text-dc-secondary');
+        }
     }
-}
-document.getElementById('body-input').addEventListener('input', function() {
-    const preview = document.getElementById('preview-pane');
-    if (!preview.classList.contains('hidden')) {
-        preview.innerHTML = marked.parse(this.value || '');
-    }
+
+    setActiveTab('editor');
+
+    tabEditor.addEventListener('click', function () { setActiveTab('editor'); });
+    tabPreview.addEventListener('click', function () { setActiveTab('preview'); });
+
+    editor.addEventListener('input', function () {
+        if (!preview.classList.contains('hidden') && typeof marked !== 'undefined') {
+            preview.innerHTML = marked.parse(this.value || '');
+        }
+    });
 });
 </script>
 @endpush

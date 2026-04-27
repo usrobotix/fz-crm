@@ -18,7 +18,7 @@
             <dl class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-ys-s">
                 <div>
                     <dt class="text-dc-secondary">Статус</dt>
-                    @php $stCls = ['draft'=>'text-dc-secondary','active'=>'text-dc-green-100','deprecated'=>'text-dc-red-100']; @endphp
+                    @php $stCls = ['draft'=>'text-dc-secondary','active'=>'text-dc-green-100','archived'=>'text-dc-red-100']; @endphp
                     <dd class="font-medium {{ $stCls[$template->status] ?? 'text-dc' }}">{{ $template->status }}</dd>
                 </div>
                 <div>
@@ -42,9 +42,9 @@
         @if($template->latestVersion)
         <div class="bg-surface rounded-md shadow-dc-card overflow-hidden">
             <div class="flex border-b border-dc">
-                <button type="button" onclick="switchTab('source')" id="tab-source"
+                <button type="button" id="tab-source"
                     class="px-4 py-3 text-ys-s font-medium text-dc-primary border-b-2 border-dc-blue-100">Исходник</button>
-                <button type="button" onclick="switchTab('rendered')" id="tab-rendered"
+                <button type="button" id="tab-rendered"
                     class="px-4 py-3 text-ys-s font-medium text-dc-secondary hover:text-dc">Предпросмотр</button>
             </div>
             <div id="pane-source" class="p-5">
@@ -89,29 +89,40 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
-const rawBody = @json($template->latestVersion?->body ?? '');
-
-function switchTab(tab) {
+document.addEventListener('DOMContentLoaded', function () {
+    const rawBody = @json($template->latestVersion?->body ?? '');
     const source = document.getElementById('pane-source');
     const rendered = document.getElementById('pane-rendered');
     const tabSource = document.getElementById('tab-source');
     const tabRendered = document.getElementById('tab-rendered');
-    if (tab === 'source') {
-        source.classList.remove('hidden');
-        rendered.classList.add('hidden');
-        tabSource.classList.add('text-dc-primary','border-b-2','border-dc-blue-100');
-        tabSource.classList.remove('text-dc-secondary');
-        tabRendered.classList.remove('text-dc-primary','border-b-2','border-dc-blue-100');
-        tabRendered.classList.add('text-dc-secondary');
-    } else {
-        source.classList.add('hidden');
-        rendered.classList.remove('hidden');
-        rendered.innerHTML = marked.parse(rawBody);
-        tabRendered.classList.add('text-dc-primary','border-b-2','border-dc-blue-100');
-        tabRendered.classList.remove('text-dc-secondary');
-        tabSource.classList.remove('text-dc-primary','border-b-2','border-dc-blue-100');
-        tabSource.classList.add('text-dc-secondary');
+
+    if (!tabSource || !tabRendered) return;
+
+    function setActiveTab(tab) {
+        if (tab === 'source') {
+            source.classList.remove('hidden');
+            rendered.classList.add('hidden');
+            tabSource.classList.add('text-dc-primary', 'border-b-2', 'border-dc-blue-100');
+            tabSource.classList.remove('text-dc-secondary');
+            tabRendered.classList.remove('text-dc-primary', 'border-b-2', 'border-dc-blue-100');
+            tabRendered.classList.add('text-dc-secondary');
+        } else {
+            source.classList.add('hidden');
+            rendered.classList.remove('hidden');
+            if (typeof marked !== 'undefined') {
+                rendered.innerHTML = marked.parse(rawBody);
+            } else {
+                rendered.innerHTML = '<p style="color:#b00">Ошибка: marked не загрузился</p>';
+            }
+            tabRendered.classList.add('text-dc-primary', 'border-b-2', 'border-dc-blue-100');
+            tabRendered.classList.remove('text-dc-secondary');
+            tabSource.classList.remove('text-dc-primary', 'border-b-2', 'border-dc-blue-100');
+            tabSource.classList.add('text-dc-secondary');
+        }
     }
-}
+
+    tabSource.addEventListener('click', function () { setActiveTab('source'); });
+    tabRendered.addEventListener('click', function () { setActiveTab('rendered'); });
+});
 </script>
 @endpush
