@@ -24,7 +24,7 @@
                 <select name="status" onchange="this.form.submit()"
                     class="rounded-2xs border border-dc-gray-20 bg-surface text-dc text-ys-s px-3 py-2 focus:outline-none focus:border-dc-blue-100">
                     <option value="">Все статусы</option>
-                    @foreach(['draft'=>'Черновик','active'=>'Активный','deprecated'=>'Устаревший'] as $val => $lbl)
+                    @foreach(['draft'=>'Черновик','active'=>'Активный','archived'=>'Устаревший'] as $val => $lbl)
                     <option value="{{ $val }}" {{ request('status') === $val ? 'selected' : '' }}>{{ $lbl }}</option>
                     @endforeach
                 </select>
@@ -64,8 +64,8 @@
                     <td class="dc-table-cell px-4 py-3 text-dc-secondary">{{ $tpl->doc_type ?: '—' }}</td>
                     <td class="dc-table-cell px-4 py-3">
                         @php
-                        $stCls = ['draft'=>'text-dc-secondary','active'=>'text-dc-green-100','deprecated'=>'text-dc-red-100'];
-                        $stLbl = ['draft'=>'Черновик','active'=>'Активный','deprecated'=>'Устаревший'];
+                        $stCls = ['draft'=>'text-dc-secondary','active'=>'text-dc-green-100','archived'=>'text-dc-red-100'];
+                        $stLbl = ['draft'=>'Черновик','active'=>'Активный','archived'=>'Устаревший'];
                         @endphp
                         <span class="{{ $stCls[$tpl->status] ?? 'text-dc-secondary' }}">{{ $stLbl[$tpl->status] ?? $tpl->status }}</span>
                     </td>
