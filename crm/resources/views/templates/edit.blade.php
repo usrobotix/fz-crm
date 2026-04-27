@@ -93,7 +93,6 @@
             </div>
         </form>
     </div>
-</x-app-layout>
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -140,3 +139,4 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
+</x-app-layout>
