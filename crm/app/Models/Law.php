@@ -6,7 +6,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class Law extends Model
 {
-    protected $fillable = ['code', 'name', 'description'];
+    protected $fillable = [
+        'code',
+        'country',
+        'type',
+        'status',
+        'published_at',
+        'name',
+        'description',
+        'official_url',
+        'word_url',
+        'consultant_url',
+        'tags',
+        'comment',
+    ];
+
+    protected $casts = [
+        'published_at' => 'date',
+        'tags' => 'array',
+    ];
 
     public function templates()
     {
@@ -16,5 +34,10 @@ class Law extends Model
     public function projects()
     {
         return $this->hasMany(Project::class);
+    }
+
+    public function expertOpinions()
+    {
+        return $this->hasMany(LawExpertOpinion::class)->orderBy('sort_order');
     }
 }
